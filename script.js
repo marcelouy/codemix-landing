@@ -1,3 +1,177 @@
+// Code animation in phone mockup - FIXED VERSION
+function startCodeAnimation() {
+    console.log('Iniciando animación...');
+    
+    // Reset animation
+    const codeLines = document.querySelectorAll('.code-line');
+    const websitePreview = document.getElementById('websitePreview');
+    const codeContainer = document.querySelector('.code-container');
+    
+    if (codeLines.length === 0) {
+        console.error('No se encontraron líneas de código');
+        return;
+    }
+    
+    // Reset states
+    codeLines.forEach(line => line.classList.remove('visible'));
+    if (websitePreview) websitePreview.classList.remove('show');
+    if (codeContainer) codeContainer.style.opacity = '1';
+    
+    console.log(`Encontradas ${codeLines.length} líneas de código`);
+    
+    let delay = 500; // Start delay
+    
+    codeLines.forEach((line, index) => {
+        setTimeout(() => {
+            line.classList.add('visible');
+            console.log(`Línea ${index + 1} visible`);
+            
+            // Si es la última línea
+            if (index === codeLines.length - 1) {
+                console.log('Última línea - mostrando preview en 2 segundos...');
+                setTimeout(() => {
+                    showWebsitePreview();
+                }, 2000);
+            }
+        }, delay);
+        
+        delay += 400; // 400ms entre líneas
+    });
+}
+
+// Show website preview - FIXED VERSION
+function showWebsitePreview() {
+    console.log('Mostrando preview del sitio web...');
+    const codeContainer = document.querySelector('.code-container');
+    const websitePreview = document.getElementById('websitePreview');
+    
+    if (!codeContainer || !websitePreview) {
+        console.error('No se encontraron elementos necesarios para el preview');
+        return;
+    }
+    
+    // Fade out code
+    codeContainer.style.transition = 'opacity 0.8s ease';
+    codeContainer.style.opacity = '0.1';
+    
+    // Show website preview
+    setTimeout(() => {
+        websitePreview.classList.add('show');
+        console.log('Preview mostrado!');
+    }, 500);
+}
+
+// Enhanced navbar scroll effect
+function handleNavbarScroll() {
+    const nav = document.querySelector('.nav');
+    const scrolled = window.scrollY;
+    
+    if (scrolled > 50) {
+        nav.classList.add('scrolled');
+    } else {
+        nav.classList.remove('scrolled');
+    }
+}
+
+// Navbar background on scroll - Enhanced
+window.addEventListener('scroll', function() {
+    handleNavbarScroll();
+    
+    // Parallax effect for hero background (optional)
+    const scrolled = window.pageYOffset;
+    const header = document.querySelector('.header');
+    
+    if (header && scrolled < header.offsetHeight) {
+        header.style.transform = `translateY(${scrolled * 0.3}px)`;
+    }
+});
+
+// Enhanced mobile menu CSS
+const mobileMenuCSS = `
+.nav-links.active {
+    display: flex !important;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: rgba(26, 26, 26, 0.98);
+    flex-direction: column;
+    padding: 2rem;
+    gap: 1.5rem;
+    backdrop-filter: blur(10px);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-3px); }
+    60% { transform: translateY(-2px); }
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+}
+`;
+
+// Inject mobile menu CSS
+const mobileStyle = document.createElement('style');
+mobileStyle.textContent = mobileMenuCSS;
+document.head.appendChild(mobileStyle);
+
+// Start code animation when hero section is visible - FIXED
+const heroObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            console.log('Hero section visible, starting animation in 1 second...');
+            setTimeout(() => {
+                startCodeAnimation();
+            }, 1000);
+            heroObserver.unobserve(entry.target); // Only run once
+        }
+    });
+}, { threshold: 0.3 });
+
+// Initialize when DOM is ready - CONSOLIDATED
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('CodeMix UY DOM loaded');
+    
+    const heroSection = document.querySelector('.hero');
+    if (heroSection) {
+        console.log('Hero section found, setting up observer');
+        heroObserver.observe(heroSection);
+    } else {
+        console.error('Hero section not found!');
+    }
+    
+    // Also initialize elements that should fade in
+    const fadeElements = document.querySelectorAll('.fade-in, .service-card, .portfolio-item, .step, .contact-item');
+    console.log(`Found ${fadeElements.length} fade elements`);
+    fadeElements.forEach(el => {
+        observer.observe(el);
+    });
+    
+    console.log('CodeMix UY website loaded successfully! 🎉');
+    
+    // Add smooth scroll behavior to html element
+    document.documentElement.style.scrollBehavior = 'smooth';
+    
+    // Set initial theme
+    document.body.classList.add('loaded');
+});
+
 // Smooth scrolling for navigation links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
@@ -37,21 +211,11 @@ const observer = new IntersectionObserver((entries) => {
 }, observerOptions);
 
 // Observe all elements that should fade in
-document.addEventListener('DOMContentLoaded', function() {
-    const fadeElements = document.querySelectorAll('.fade-in, .service-card, .portfolio-item, .step, .contact-item');
-    fadeElements.forEach(el => {
-        observer.observe(el);
-    });
-});
+// (This is now handled in DOMContentLoaded above)
 
-// Navbar background on scroll
+// Navbar background on scroll - Enhanced
 window.addEventListener('scroll', function() {
-    const nav = document.querySelector('.nav');
-    if (window.scrollY > 100) {
-        nav.style.background = 'rgba(26, 26, 26, 0.98)';
-    } else {
-        nav.style.background = 'rgba(26, 26, 26, 0.95)';
-    }
+    handleNavbarScroll();
 });
 
 // Form handling
@@ -85,7 +249,7 @@ ${mensaje}
         const encodedMessage = encodeURIComponent(whatsappMessage);
         
         // Open WhatsApp
-        window.open(`https://wa.me/59892345678?text=${encodedMessage}`, '_blank');
+        window.open(`https://wa.me/59894640299?text=${encodedMessage}`, '_blank');
         
         // Reset form
         this.reset();
@@ -247,43 +411,7 @@ if ('IntersectionObserver' in window) {
 }
 
 // Enhanced mobile menu
-const mobileMenuCSS = `
-.nav-links.active {
-    display: flex !important;
-    position: fixed;
-    top: 70px;
-    left: 0;
-    right: 0;
-    background: rgba(26, 26, 26, 0.98);
-    flex-direction: column;
-    padding: 2rem;
-    gap: 1.5rem;
-    backdrop-filter: blur(10px);
-    animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@media (max-width: 768px) {
-    .nav-links {
-        display: none;
-    }
-}
-`;
-
-// Inject mobile menu CSS
-const style = document.createElement('style');
-style.textContent = mobileMenuCSS;
-document.head.appendChild(style);
+// (CSS already injected above)
 
 // Close mobile menu when clicking on a link
 document.querySelectorAll('.nav-links a').forEach(link => {
@@ -352,20 +480,12 @@ criticalImages.forEach(imageSrc => {
 console.log(`
 🚀 CodeMix UY - Páginas Web Profesionales
 📧 codemixuy@gmail.com
-📱 WhatsApp: +598 92 345 678
+📱 WhatsApp: +598 94 640 299
 💻 Desarrollado con tecnologías modernas
 `);
 
 // Initialize everything when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('CodeMix UY website loaded successfully! 🎉');
-    
-    // Add smooth scroll behavior to html element
-    document.documentElement.style.scrollBehavior = 'smooth';
-    
-    // Set initial theme
-    document.body.classList.add('loaded');
-});
+// (This is now consolidated above)
 
 // Error handling for images
 document.querySelectorAll('img').forEach(img => {
