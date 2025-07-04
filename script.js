@@ -1,47 +1,55 @@
-// Code animation in phone mockup - FIXED VERSION
+// Code animation in phone mockup - INFINITE LOOP VERSION
+let animationTimeout;
+let isAnimating = false;
+
 function startCodeAnimation() {
-    console.log('Iniciando animación...');
+    if (isAnimating) return; // Prevent multiple animations
     
-    // Reset animation
+    console.log('🚀 Iniciando ciclo de animación...');
+    isAnimating = true;
+    
     const codeLines = document.querySelectorAll('.code-line');
     const websitePreview = document.getElementById('websitePreview');
     const codeContainer = document.querySelector('.code-container');
     
     if (codeLines.length === 0) {
         console.error('No se encontraron líneas de código');
+        isAnimating = false;
         return;
     }
     
     // Reset states
     codeLines.forEach(line => line.classList.remove('visible'));
     if (websitePreview) websitePreview.classList.remove('show');
-    if (codeContainer) codeContainer.style.opacity = '1';
+    if (codeContainer) {
+        codeContainer.style.opacity = '1';
+        codeContainer.style.filter = 'brightness(1)';
+    }
     
-    console.log(`Encontradas ${codeLines.length} líneas de código`);
+    console.log(`📝 Escribiendo ${codeLines.length} líneas de código...`);
     
-    let delay = 500; // Start delay
+    let delay = 300;
     
     codeLines.forEach((line, index) => {
         setTimeout(() => {
             line.classList.add('visible');
-            console.log(`Línea ${index + 1} visible`);
             
             // Si es la última línea
             if (index === codeLines.length - 1) {
-                console.log('Última línea - mostrando preview en 2 segundos...');
+                console.log('✅ Código completado - mostrando preview en 1 segundo...');
                 setTimeout(() => {
                     showWebsitePreview();
-                }, 2000);
+                }, 1000);
             }
         }, delay);
         
-        delay += 400; // 400ms entre líneas
+        delay += 350; // 350ms entre líneas
     });
 }
 
-// Show website preview - FIXED VERSION
+// Show website preview - ENHANCED VERSION
 function showWebsitePreview() {
-    console.log('Mostrando preview del sitio web...');
+    console.log('📱 Mostrando preview del sitio web con efectos...');
     const codeContainer = document.querySelector('.code-container');
     const websitePreview = document.getElementById('websitePreview');
     
@@ -50,15 +58,66 @@ function showWebsitePreview() {
         return;
     }
     
-    // Fade out code
-    codeContainer.style.transition = 'opacity 0.8s ease';
-    codeContainer.style.opacity = '0.1';
+    // Fade out code with brightness effect
+    codeContainer.style.transition = 'all 0.8s ease';
+    codeContainer.style.opacity = '0.05';
+    codeContainer.style.filter = 'brightness(0.3) blur(2px)';
     
-    // Show website preview
+    // Show website preview with enhanced effects
     setTimeout(() => {
         websitePreview.classList.add('show');
-        console.log('Preview mostrado!');
-    }, 500);
+        console.log('✨ Preview mostrado con efectos de brillo!');
+        
+        // Wait 3 seconds then restart the cycle
+        animationTimeout = setTimeout(() => {
+            console.log('🔄 Reiniciando ciclo...');
+            hideWebsitePreview();
+        }, 3000);
+        
+    }, 600);
+}
+
+// Hide website preview and restart cycle
+function hideWebsitePreview() {
+    const websitePreview = document.getElementById('websitePreview');
+    const codeContainer = document.querySelector('.code-container');
+    
+    if (websitePreview) {
+        websitePreview.style.transition = 'all 0.8s ease';
+        websitePreview.style.opacity = '0';
+        websitePreview.style.transform = 'scale(0.8)';
+        
+        setTimeout(() => {
+            websitePreview.classList.remove('show');
+            websitePreview.style.opacity = '';
+            websitePreview.style.transform = '';
+            websitePreview.style.transition = '';
+            
+            // Reset code container
+            if (codeContainer) {
+                codeContainer.style.transition = 'all 0.5s ease';
+                codeContainer.style.opacity = '1';
+                codeContainer.style.filter = 'brightness(1) blur(0px)';
+            }
+            
+            // Restart animation after a brief pause
+            setTimeout(() => {
+                isAnimating = false;
+                startCodeAnimation();
+            }, 800);
+            
+        }, 800);
+    }
+}
+
+// Stop animation when user scrolls away
+function stopAnimation() {
+    if (animationTimeout) {
+        clearTimeout(animationTimeout);
+        animationTimeout = null;
+    }
+    isAnimating = false;
+    console.log('⏹️ Animación detenida');
 }
 
 // Enhanced navbar scroll effect
@@ -131,39 +190,69 @@ const mobileStyle = document.createElement('style');
 mobileStyle.textContent = mobileMenuCSS;
 document.head.appendChild(mobileStyle);
 
-// Start code animation when hero section is visible - FIXED
+// Start code animation when hero section is visible - INFINITE LOOP
 const heroObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            console.log('Hero section visible, starting animation in 1 second...');
+            console.log('🎯 Hero section visible, starting infinite animation loop...');
             setTimeout(() => {
                 startCodeAnimation();
             }, 1000);
-            heroObserver.unobserve(entry.target); // Only run once
+        } else {
+            // Stop animation when scrolling away
+            console.log('📴 Hero section not visible, stopping animation...');
+            stopAnimation();
         }
     });
-}, { threshold: 0.3 });
+}, { threshold: 0.2 });
 
-// Initialize when DOM is ready - CONSOLIDATED
+// Initialize when DOM is ready - CONSOLIDATED + DEBUG
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('CodeMix UY DOM loaded');
+    console.log('🔧 CodeMix UY DOM loaded');
     
-    const heroSection = document.querySelector('.hero');
-    if (heroSection) {
-        console.log('Hero section found, setting up observer');
-        heroObserver.observe(heroSection);
+    // Check if phone elements exist
+    const phoneElements = {
+        heroSection: document.querySelector('.hero'),
+        phoneMockup: document.querySelector('.phone-mockup'),
+        phoneScreen: document.querySelector('.phone-screen'),
+        demoContent: document.querySelector('.demo-content'),
+        codeContainer: document.querySelector('.code-container'),
+        codeLines: document.querySelectorAll('.code-line'),
+        websitePreview: document.getElementById('websitePreview')
+    };
+    
+    console.log('📱 Phone elements check:', {
+        heroSection: !!phoneElements.heroSection,
+        phoneMockup: !!phoneElements.phoneMockup,
+        phoneScreen: !!phoneElements.phoneScreen,
+        demoContent: !!phoneElements.demoContent,
+        codeContainer: !!phoneElements.codeContainer,
+        codeLines: phoneElements.codeLines.length,
+        websitePreview: !!phoneElements.websitePreview
+    });
+    
+    // Show first line immediately for testing
+    if (phoneElements.codeLines.length > 0) {
+        phoneElements.codeLines[0].style.opacity = '1';
+        phoneElements.codeLines[0].style.transform = 'translateX(0)';
+        console.log('✅ First code line made visible for testing');
+    }
+    
+    if (phoneElements.heroSection) {
+        console.log('🎯 Hero section found, setting up observer');
+        heroObserver.observe(phoneElements.heroSection);
     } else {
-        console.error('Hero section not found!');
+        console.error('❌ Hero section not found!');
     }
     
     // Also initialize elements that should fade in
     const fadeElements = document.querySelectorAll('.fade-in, .service-card, .portfolio-item, .step, .contact-item');
-    console.log(`Found ${fadeElements.length} fade elements`);
+    console.log(`📄 Found ${fadeElements.length} fade elements`);
     fadeElements.forEach(el => {
         observer.observe(el);
     });
     
-    console.log('CodeMix UY website loaded successfully! 🎉');
+    console.log('🎉 CodeMix UY website loaded successfully!');
     
     // Add smooth scroll behavior to html element
     document.documentElement.style.scrollBehavior = 'smooth';
