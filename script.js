@@ -1,11 +1,11 @@
-// Code animation in phone mockup - INFINITE LOOP VERSION
+// Code animation in phone mockup - FIXED TIMING
 let animationTimeout;
 let isAnimating = false;
 
 function startCodeAnimation() {
-    if (isAnimating) return; // Prevent multiple animations
+    if (isAnimating) return;
     
-    console.log('🚀 Iniciando ciclo de animación...');
+    console.log('🚀 INICIANDO CICLO: Escribiendo código...');
     isAnimating = true;
     
     const codeLines = document.querySelectorAll('.code-line');
@@ -13,111 +13,187 @@ function startCodeAnimation() {
     const codeContainer = document.querySelector('.code-container');
     
     if (codeLines.length === 0) {
-        console.error('No se encontraron líneas de código');
+        console.error('❌ No se encontraron líneas de código');
         isAnimating = false;
         return;
     }
     
-    // Reset states
-    codeLines.forEach(line => line.classList.remove('visible'));
-    if (websitePreview) websitePreview.classList.remove('show');
-    if (codeContainer) {
-        codeContainer.style.opacity = '1';
-        codeContainer.style.filter = 'brightness(1)';
+    // Reset states COMPLETELY
+    codeLines.forEach(line => {
+        line.classList.remove('visible');
+        line.style.opacity = '0';
+        line.style.transform = 'translateX(-10px)';
+    });
+    
+    if (websitePreview) {
+        websitePreview.classList.remove('show');
+        websitePreview.style.display = 'none';
+        websitePreview.style.opacity = '0';
+        websitePreview.style.transform = 'scale(0.7)';
+        console.log('📱 Preview reset to hidden state');
     }
     
-    console.log(`📝 Escribiendo ${codeLines.length} líneas de código...`);
+    if (codeContainer) {
+        codeContainer.style.opacity = '1';
+        codeContainer.style.filter = 'brightness(1) blur(0px)';
+        codeContainer.style.transition = 'none';
+    }
     
-    let delay = 300;
+    console.log(`⌨️ Escribiendo ${codeLines.length} líneas de código...`);
+    
+    let delay = 400;
+    let lineCount = 0;
     
     codeLines.forEach((line, index) => {
         setTimeout(() => {
             line.classList.add('visible');
+            line.style.opacity = '1';
+            line.style.transform = 'translateX(0)';
+            lineCount++;
+            
+            console.log(`📝 Línea ${lineCount}/${codeLines.length}: ${line.textContent.substring(0, 30)}...`);
             
             // Si es la última línea
             if (index === codeLines.length - 1) {
-                console.log('✅ Código completado - mostrando preview en 1 segundo...');
-                setTimeout(() => {
+                console.log('✅ CÓDIGO COMPLETADO! Esperando 1 segundo antes de mostrar sitio...');
+                
+                // Clear any existing timeout
+                if (animationTimeout) {
+                    clearTimeout(animationTimeout);
+                }
+                
+                animationTimeout = setTimeout(() => {
+                    console.log('🎬 Ejecutando showWebsitePreview...');
                     showWebsitePreview();
                 }, 1000);
             }
         }, delay);
         
-        delay += 350; // 350ms entre líneas
+        delay += 250; // 250ms entre líneas (más rápido)
     });
 }
 
-// Show website preview - ENHANCED VERSION
+// Show website preview - GUARANTEED TO WORK
 function showWebsitePreview() {
-    console.log('📱 Mostrando preview del sitio web con efectos...');
+    console.log('🌐 === INICIANDO TRANSFORMACIÓN A SITIO WEB ===');
     const codeContainer = document.querySelector('.code-container');
     const websitePreview = document.getElementById('websitePreview');
     
-    if (!codeContainer || !websitePreview) {
-        console.error('No se encontraron elementos necesarios para el preview');
+    if (!codeContainer) {
+        console.error('❌ CodeContainer no encontrado');
         return;
     }
     
-    // Fade out code with brightness effect
-    codeContainer.style.transition = 'all 0.8s ease';
-    codeContainer.style.opacity = '0.05';
-    codeContainer.style.filter = 'brightness(0.3) blur(2px)';
+    if (!websitePreview) {
+        console.error('❌ WebsitePreview no encontrado');
+        return;
+    }
     
-    // Show website preview with enhanced effects
+    console.log('✅ Ambos elementos encontrados, procediendo...');
+    
+    // Step 1: Fade out code
+    console.log('1️⃣ Ocultando código...');
+    codeContainer.style.transition = 'all 0.8s ease';
+    codeContainer.style.opacity = '0.02';
+    codeContainer.style.filter = 'brightness(0.1) blur(3px)';
+    
+    // Step 2: Prepare preview (ensure it exists in DOM)
+    console.log('2️⃣ Preparando preview...');
+    websitePreview.style.display = 'block';
+    websitePreview.style.opacity = '0';
+    websitePreview.style.transform = 'scale(0.7)';
+    websitePreview.style.transition = 'none';
+    
+    // Step 3: Force reflow
+    websitePreview.offsetHeight;
+    
+    // Step 4: Animate preview appearance
     setTimeout(() => {
+        console.log('3️⃣ Animando aparición del sitio web...');
+        
+        websitePreview.style.transition = 'all 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        websitePreview.style.opacity = '1';
+        websitePreview.style.transform = 'scale(1)';
         websitePreview.classList.add('show');
-        console.log('✨ Preview mostrado con efectos de brillo!');
         
-        // Wait 3 seconds then restart the cycle
+        console.log('✨ SITIO WEB VISIBLE! Mostrando durante 4 segundos...');
+        
+        // Step 5: Wait and restart cycle
+        if (animationTimeout) {
+            clearTimeout(animationTimeout);
+        }
+        
         animationTimeout = setTimeout(() => {
-            console.log('🔄 Reiniciando ciclo...');
+            console.log('🔄 Tiempo completado, iniciando ocultación...');
             hideWebsitePreview();
-        }, 3000);
+        }, 4000);
         
-    }, 600);
+    }, 1000);
 }
 
-// Hide website preview and restart cycle
+// Hide website preview and restart cycle - IMPROVED
 function hideWebsitePreview() {
     const websitePreview = document.getElementById('websitePreview');
     const codeContainer = document.querySelector('.code-container');
     
-    if (websitePreview) {
-        websitePreview.style.transition = 'all 0.8s ease';
-        websitePreview.style.opacity = '0';
-        websitePreview.style.transform = 'scale(0.8)';
-        
-        setTimeout(() => {
-            websitePreview.classList.remove('show');
-            websitePreview.style.opacity = '';
-            websitePreview.style.transform = '';
-            websitePreview.style.transition = '';
-            
-            // Reset code container
-            if (codeContainer) {
-                codeContainer.style.transition = 'all 0.5s ease';
-                codeContainer.style.opacity = '1';
-                codeContainer.style.filter = 'brightness(1) blur(0px)';
-            }
-            
-            // Restart animation after a brief pause
-            setTimeout(() => {
-                isAnimating = false;
-                startCodeAnimation();
-            }, 800);
-            
-        }, 800);
+    console.log('⚡ === OCULTANDO SITIO WEB Y REINICIANDO CICLO ===');
+    
+    if (!websitePreview) {
+        console.error('❌ WebsitePreview no encontrado para ocultar');
+        isAnimating = false;
+        return;
     }
+    
+    // Animate preview disappearance
+    console.log('1️⃣ Ocultando preview...');
+    websitePreview.style.transition = 'all 0.8s ease';
+    websitePreview.style.opacity = '0';
+    websitePreview.style.transform = 'scale(0.6)';
+    
+    setTimeout(() => {
+        // Completely hide preview
+        console.log('2️⃣ Removiendo preview del DOM...');
+        websitePreview.classList.remove('show');
+        websitePreview.style.display = 'none';
+        websitePreview.style.opacity = '';
+        websitePreview.style.transform = '';
+        websitePreview.style.transition = '';
+        
+        // Reset code container
+        if (codeContainer) {
+            console.log('3️⃣ Restaurando código...');
+            codeContainer.style.transition = 'all 0.6s ease';
+            codeContainer.style.opacity = '1';
+            codeContainer.style.filter = 'brightness(1) blur(0px)';
+        }
+        
+        console.log('🔁 === NUEVO CICLO INICIANDO EN 1 SEGUNDO ===');
+        
+        // Restart animation after pause
+        setTimeout(() => {
+            isAnimating = false;
+            startCodeAnimation();
+        }, 1000);
+        
+    }, 800);
 }
 
-// Stop animation when user scrolls away
+// Stop animation when user scrolls away - IMPROVED
 function stopAnimation() {
     if (animationTimeout) {
         clearTimeout(animationTimeout);
         animationTimeout = null;
     }
     isAnimating = false;
-    console.log('⏹️ Animación detenida');
+    
+    // Reset preview state
+    const websitePreview = document.getElementById('websitePreview');
+    if (websitePreview) {
+        websitePreview.classList.remove('show');
+        websitePreview.style.display = 'none';
+    }
+    
+    console.log('⏹️ Animación detenida - usuario scrolleó fuera del área');
 }
 
 // Enhanced navbar scroll effect
@@ -206,7 +282,7 @@ const heroObserver = new IntersectionObserver((entries) => {
     });
 }, { threshold: 0.2 });
 
-// Initialize when DOM is ready - CONSOLIDATED + DEBUG
+// Initialize when DOM is ready - CONSOLIDATED + DEBUG + TEST BUTTON
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🔧 CodeMix UY DOM loaded');
     
@@ -237,6 +313,34 @@ document.addEventListener('DOMContentLoaded', function() {
         phoneElements.codeLines[0].style.transform = 'translateX(0)';
         console.log('✅ First code line made visible for testing');
     }
+    
+    // Add test button (remove in production)
+    const testButton = document.createElement('button');
+    testButton.textContent = '🧪 Test Preview';
+    testButton.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 9999;
+        background: #00ff88;
+        color: #1a1a1a;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+    `;
+    testButton.onclick = () => {
+        console.log('🧪 Manual test: Showing preview...');
+        if (phoneElements.websitePreview) {
+            phoneElements.websitePreview.style.display = 'block';
+            phoneElements.websitePreview.style.opacity = '1';
+            phoneElements.websitePreview.style.transform = 'scale(1)';
+            phoneElements.websitePreview.classList.add('show');
+            console.log('🧪 Preview forced visible');
+        }
+    };
+    document.body.appendChild(testButton);
     
     if (phoneElements.heroSection) {
         console.log('🎯 Hero section found, setting up observer');
