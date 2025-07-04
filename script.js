@@ -340,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('🧪 Preview forced visible');
         }
     };
-    document.body.appendChild(testButton);
+    //document.body.appendChild(testButton);
     
     if (phoneElements.heroSection) {
         console.log('🎯 Hero section found, setting up observer');
